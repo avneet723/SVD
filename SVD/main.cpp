@@ -12,7 +12,9 @@ int main(int argc, char** argv)
 
     mat A(atoi(argv[1]),atoi(argv[2]));
     // fill the matrix with some random numbers
+
     A.randn();
+
     mat U,V;
     vec S;
     test_svd_builtin(A);
@@ -73,12 +75,22 @@ void test_SVD(mat &A) {
 void SVD(mat &U , vec &S, mat &V,mat &A) {
     // find A*A^T, then the eigevnvalues and eigevnvectors.
     mat AAT = A*A.t();
-    vec eigval;
-    eig_sym(eigval,U,AAT);
+    vec eigval1;
+    eig_sym(eigval1,U,AAT);
     // find A^T*A, then the eigevnvalues and eigevnvectors.
     mat ATA = A.t()*A;
-    eig_sym(eigval,V,ATA);
-    S=arma::sqrt(eigval);
+    vec eigval2;
+    eig_sym(eigval2,V,ATA);
+//    cout<<"*********************************************"<<endl;
+//    cout<<eigval<<endl;
+//    cout<<"*********************************************"<<endl;
+    U=fliplr(U);
+    V=fliplr(V);
+
+    S=sqrt(eigval1.size()<eigval2.size()?eigval1:eigval2);
+    S=flipud(S);
+//    S=arma::sort(S, 1);
+
 
 
 
