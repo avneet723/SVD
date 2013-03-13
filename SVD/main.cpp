@@ -7,13 +7,13 @@ using namespace arma;
 void test_svd_builtin(mat &A);
 void test_SVD(mat &A);
 void SVD(mat &U, vec &S, mat &V, mat &A);
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
 
     mat A(atoi(argv[1]),atoi(argv[2]));
     // fill the matrix with some random numbers
 
-    A.randn();
+    A.randu();
+    cout<<A<<endl;
 
     mat U,V;
     vec S;
@@ -30,7 +30,7 @@ void test_svd_builtin(mat &A) {
     vec S;
 
     svd(U,S,V,A);
-    cout<<A<<endl;
+//     cout<<A<<endl;
     cout<<"\nU:"<<endl;
     cout<<U<<endl;
     cout<<"\nV:"<<endl;
@@ -53,7 +53,7 @@ void test_SVD(mat &A) {
     vec S;
 
     SVD(U,S,V,A);
-    cout<<A<<endl;
+//     cout<<A<<endl;
     cout<<"\nU:"<<endl;
     cout<<U<<endl;
     cout<<"\nV:"<<endl;
@@ -74,22 +74,35 @@ void test_SVD(mat &A) {
 // our own SVD function
 void SVD(mat &U , vec &S, mat &V,mat &A) {
     // find A*A^T, then the eigevnvalues and eigevnvectors.
-    mat AAT = A*A.t();
-    vec eigval1;
-    eig_sym(eigval1,U,AAT);
-    // find A^T*A, then the eigevnvalues and eigevnvectors.
-    mat ATA = A.t()*A;
-    vec eigval2;
-    eig_sym(eigval2,V,ATA);
-//    cout<<"*********************************************"<<endl;
-//    cout<<eigval<<endl;
-//    cout<<"*********************************************"<<endl;
-    U=fliplr(U);
-    V=fliplr(V);
+    if(A.n_cols<A.n_rows) {
+        mat AAT = A*A.t();
+        vec eigval;
+        eig_sym(eigval,U,AAT);
+        U=fliplr(U);
+        eigval=flipud(eigval);
+        eigval.resize(A.n_cols);
+        S=sqrt(eigval);
+        V=A.t()*U;
+        V.resize(A.n_cols,A.n_cols);
+        for(int i=0; i<S.size(); i++) {
+            V.col(i)/=S(i,0);
+        }
+    } else {
+        mat ATA = A.t()*A;
+        vec eigval;
+        eig_sym(eigval,V,ATA);
+        V=fliplr(V);
+        eigval=flipud(eigval);
+        eigval.resize(A.n_rows);
+        S=sqrt(eigval);
+        U=A*V;
+        U.resize(A.n_rows,A.n_rows);
+        for(int i=0; i<S.size(); i++) {
+            U.col(i)/=S(i,0);
+        }
+ 
+    }
 
-    S=sqrt(eigval1.size()<eigval2.size()?eigval1:eigval2);
-    S=flipud(S);
-//    S=arma::sort(S, 1);
 
 
 
