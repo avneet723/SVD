@@ -1,5 +1,6 @@
 #include <iostream>
 #include "armadillo"
+#include <opencv2/opencv>
 
 using namespace std;
 using namespace arma;
@@ -9,17 +10,27 @@ void test_SVD(mat &A);
 void SVD(mat &U, vec &S, mat &V, mat &A);
 int main(int argc, char** argv) {
 
-    mat A(atoi(argv[1]),atoi(argv[2]));
+    cv:Mat input;
+    cv:Mat finput;
+    input = cv:imread(argv[1],CV_LOAD_IMAGE_GRAYSCALE);
+    // transform cv:Mat to arma:mat
+    input.convertTo(finput, CV_32F);
+    
+    mat(finput.data,finput.size.height,finput.size.width);
+    
+
+
+//     mat A(atoi(argv[1]),atoi(argv[2]));
     // fill the matrix with some random numbers
 
-    A.randu();
-    cout<<A<<endl;
+//     A.randu();
+//     cout<<A<<endl;
 
-    mat U,V;
-    vec S;
-    test_svd_builtin(A);
+//     mat U,V;
+//     vec S;
+//     test_svd_builtin(A);
 
-    test_SVD(A);
+//     test_SVD(A);
     // calling the built in svd function
 
 
