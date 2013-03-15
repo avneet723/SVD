@@ -1,22 +1,39 @@
 #include <iostream>
+#include <string>
 #include "armadillo"
-#include <opencv2/opencv>
+#include <opencv2/opencv.hpp>
 
 using namespace std;
 using namespace arma;
 
-void test_svd_builtin(mat &A);
 void test_SVD(mat &A);
 void SVD(mat &U, vec &S, mat &V, mat &A);
+mat imread(const string& filename);
+cv::Mat getCVMat(const mat& input,int type=CV_8U);
+void imshow(const string& windowName, const mat& pic);
+
+mat imread(const string& filename) {
+    cv::Mat input, finput;
+    input = cv::imread(filename,CV_LOAD_IMAGE_GRAYSCALE);
+    input.convertTo(finput, CV_64F);
+    return mat((double*)finput.data,finput.size().height,finput.size().width);
+}
+cv::Mat getCVMat(const mat& input, int type) {
+    cv::Mat cvinput = cv::Mat(input.n_rows,input.n_cols,CV_64F,(void*)input.memptr());
+    cv::Mat result;
+    cvinput.convertTo(result,type);
+    return result;
+}
+void imshow(const string& windowsName, const mat& pic) {
+    cv::Mat cvPic = getCVMat(pic);
+    cv::imshow(windowsName, cvPic);
+}
 int main(int argc, char** argv) {
 
-    cv:Mat input;
-    cv:Mat finput;
-    input = cv:imread(argv[1],CV_LOAD_IMAGE_GRAYSCALE);
-    // transform cv:Mat to arma:mat
-    input.convertTo(finput, CV_32F);
+    mat input = imread(argv[1]);
     
-    mat(finput.data,finput.size.height,finput.size.width);
+    imshow("cv:input",input);
+    while(cv::waitKey()!=27);
     
 
 
@@ -32,8 +49,6 @@ int main(int argc, char** argv) {
 
 //     test_SVD(A);
     // calling the built in svd function
-
-
 
 }
 void test_svd_builtin(mat &A) {
